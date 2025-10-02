@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Arsip Pegawai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .sidebar-link.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white shadow-lg overflow-y-auto">
+            <div class="p-6 bg-blue-600 text-white">
+                <h1 class="text-2xl font-bold">e-Arsip Pegawai</h1>
+                <p class="text-sm text-blue-100 mt-1">Sistem Manajemen Arsip</p>
+            </div>
+            
+            <nav class="p-4">
+                <a href="#" onclick="showPage('dashboard')" class="sidebar-link active flex items-center p-3 rounded-lg mb-2">
+                    <span class="text-xl mr-3">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                
+                <div class="mb-2">
+                    <button onclick="toggleSubmenu('pegawai')" class="sidebar-link flex items-center justify-between w-full p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">👤</span>
+                            <span>Data Pegawai</span>
+                        </div>
+                        <span id="pegawai-arrow">▼</span>
+                    </button>
+                    <div id="pegawai-submenu" class="ml-8 mt-1 space-y-1">
+                        <a href="#" onclick="showPage('daftar-pegawai')" class="block p-2 text-sm hover:bg-gray-100 rounded">Daftar Pegawai</a>
+                        <a href="#" onclick="showPage('bendel-pegawai')" class="block p-2 text-sm hover:bg-gray-100 rounded">No Bendel Pegawai</a>
+                        <a href="#" onclick="showPage('tambah-pegawai')" class="block p-2 text-sm hover:bg-gray-100 rounded">Tambah Pegawai</a>
+                        <a href="#" onclick="showPage('cari-pegawai')" class="block p-2 text-sm hover:bg-gray-100 rounded">Cari Pegawai</a>
+                        <a href="#" onclick="showPage('sk-cpns')" class="block p-2 text-sm hover:bg-gray-100 rounded">SK CPNS & PNS</a>
+                        <a href="#" onclick="showPage('sk-pangkat')" class="block p-2 text-sm hover:bg-gray-100 rounded">SK Kenaikan Pangkat</a>
+                        <a href="#" onclick="showPage('sk-kgb')" class="block p-2 text-sm hover:bg-gray-100 rounded">SK KGB</a>
+                        <a href="#" onclick="showPage('cuti')" class="block p-2 text-sm hover:bg-gray-100 rounded">Cuti Pegawai</a>
+                        <a href="#" onclick="showPage('mutasi')" class="block p-2 text-sm hover:bg-gray-100 rounded">Mutasi</a>
+                        <a href="#" onclick="showPage('diklat')" class="block p-2 text-sm hover:bg-gray-100 rounded">Diklat & Sertifikat</a>
+                        <a href="#" onclick="showPage('pensiun')" class="block p-2 text-sm hover:bg-gray-100 rounded">Pensiun</a>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <button onclick="toggleSubmenu('pencarian')" class="sidebar-link flex items-center justify-between w-full p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">🔍</span>
+                            <span>Pencarian Arsip</span>
+                        </div>
+                        <span id="pencarian-arrow">▼</span>
+                    </button>
+                    <div id="pencarian-submenu" class="ml-8 mt-1 space-y-1 hidden">
+                        <a href="#" onclick="showPage('cari-nip')" class="block p-2 text-sm hover:bg-gray-100 rounded">Berdasarkan NIP/Nama</a>
+                        <a href="#" onclick="showPage('cari-dokumen')" class="block p-2 text-sm hover:bg-gray-100 rounded">Berdasarkan Jenis Dokumen</a>
+                        <a href="#" onclick="showPage('cari-tahun')" class="block p-2 text-sm hover:bg-gray-100 rounded">Berdasarkan Tahun</a>
+                        <a href="#" onclick="showPage('cari-unit')" class="block p-2 text-sm hover:bg-gray-100 rounded">Berdasarkan Unit Kerja</a>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <button onclick="toggleSubmenu('laporan')" class="sidebar-link flex items-center justify-between w-full p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">📊</span>
+                            <span>Laporan & Statistik</span>
+                        </div>
+                        <span id="laporan-arrow">▼</span>
+                    </button>
+                    <div id="laporan-submenu" class="ml-8 mt-1 space-y-1 hidden">
+                        <a href="#" onclick="showPage('rekap-arsip')" class="block p-2 text-sm hover:bg-gray-100 rounded">Rekap Arsip Pegawai</a>
+                        <a href="#" onclick="showPage('statistik-dokumen')" class="block p-2 text-sm hover:bg-gray-100 rounded">Statistik per Jenis Dokumen</a>
+                        <a href="#" onclick="showPage('retensi')" class="block p-2 text-sm hover:bg-gray-100 rounded">Laporan Retensi & Pemusnahan</a>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <button onclick="toggleSubmenu('pengguna')" class="sidebar-link flex items-center justify-between w-full p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">👥</span>
+                            <span>Manajemen Pengguna</span>
+                        </div>
+                        <span id="pengguna-arrow">▼</span>
+                    </button>
+                    <div id="pengguna-submenu" class="ml-8 mt-1 space-y-1 hidden">
+                        <a href="#" onclick="showPage('akun')" class="block p-2 text-sm hover:bg-gray-100 rounded">Tambah/Edit Akun</a>
+                        <a href="#" onclick="showPage('hak-akses')" class="block p-2 text-sm hover:bg-gray-100 rounded">Hak Akses</a>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <button onclick="toggleSubmenu('pengaturan')" class="sidebar-link flex items-center justify-between w-full p-3 rounded-lg">
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3">⚙️</span>
+                            <span>Pengaturan</span>
+                        </div>
+                        <span id="pengaturan-arrow">▼</span>
+                    </button>
+                    <div id="pengaturan-submenu" class="ml-8 mt-1 space-y-1 hidden">
+                        <a href="#" onclick="showPage('klasifikasi')" class="block p-2 text-sm hover:bg-gray-100 rounded">Kode Klasifikasi Arsip</a>
+                        <a href="#" onclick="showPage('backup')" class="block p-2 text-sm hover:bg-gray-100 rounded">Backup & Restore</a>
+                        <a href="#" onclick="showPage('bantuan')" class="block p-2 text-sm hover:bg-gray-100 rounded">Panduan & Bantuan</a>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <button onclick="toggleSidebar()" class="mr-4 text-gray-600 hover:text-gray-900">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        <h2 id="page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-full relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+                        <div class="flex items-center space-x-3">
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-700">Admin User</p>
+                                <p class="text-xs text-gray-500">Administrator</p>
+                            </div>
+                            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                A
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div id="content">
+                    <!-- Dashboard Content -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Pegawai</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-2">1,234</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">👤</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Arsip</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-2">5,678</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">📄</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Arsip Bulan Ini</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-2">234</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">📊</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Akan Pensiun</p>
+                                    <p class="text-3xl font-bold text-gray-800 mt-2">12</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <span class="text-2xl">⚠️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terakhir</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3 pb-3 border-b">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-sm">📝</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">SK Kenaikan Pangkat ditambahkan</p>
+                                        <p class="text-xs text-gray-500">Ahmad Sudrajat - 2 jam yang lalu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 pb-3 border-b">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-sm">✅</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">Data Pegawai Baru ditambahkan</p>
+                                        <p class="text-xs text-gray-500">Siti Nurhaliza - 3 jam yang lalu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 pb-3 border-b">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-sm">📋</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">Cuti Tahunan diajukan</p>
+                                        <p class="text-xs text-gray-500">Budi Santoso - 5 jam yang lalu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-sm">🎓</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-800">Sertifikat Diklat diunggah</p>
+                                        <p class="text-xs text-gray-500">Dewi Lestari - 1 hari yang lalu</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Notifikasi</h3>
+                            <div class="space-y-4">
+                                <div class="bg-red-50 border-l-4 border-red-500 p-4">
+                                    <div class="flex items-start">
+                                        <span class="text-lg mr-2">⚠️</span>
+                                        <div>
+                                            <p class="text-sm font-medium text-red-800">12 Pegawai akan pensiun dalam 6 bulan</p>
+                                            <p class="text-xs text-red-600 mt-1">Perlu persiapan berkas pensiun</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4">
+                                    <div class="flex items-start">
+                                        <span class="text-lg mr-2">📅</span>
+                                        <div>
+                                            <p class="text-sm font-medium text-yellow-800">45 SK KGB perlu diproses bulan ini</p>
+                                            <p class="text-xs text-yellow-600 mt-1">Kenaikan Gaji Berkala periode Oktober 2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+                                    <div class="flex items-start">
+                                        <span class="text-lg mr-2">💾</span>
+                                        <div>
+                                            <p class="text-sm font-medium text-blue-800">Backup terakhir: 1 Oktober 2025</p>
+                                            <p class="text-xs text-blue-600 mt-1">Backup berjalan dengan baik</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-green-50 border-l-4 border-green-500 p-4">
+                                    <div class="flex items-start">
+                                        <span class="text-lg mr-2">✅</span>
+                                        <div>
+                                            <p class="text-sm font-medium text-green-800">Sistem berjalan normal</p>
+                                            <p class="text-xs text-green-600 mt-1">Tidak ada masalah terdeteksi</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Statistik Arsip per Jenis Dokumen</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">SK CPNS & PNS</span>
+                                    <span class="font-medium">1,234 dokumen</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">SK Kenaikan Pangkat</span>
+                                    <span class="font-medium">987 dokumen</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: 68%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">SK KGB</span>
+                                    <span class="font-medium">1,456 dokumen</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-600 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">Cuti Pegawai</span>
+                                    <span class="font-medium">756 dokumen</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full" style="width: 52%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600">Diklat & Sertifikat</span>
+                                    <span class="font-medium">543 dokumen</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-pink-600 h-2 rounded-full" style="width: 37%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let sidebarOpen = true;
+        const pages = {
+            'dashboard': 'Dashboard',
+            'daftar-pegawai': 'Daftar Pegawai',
+            'bendel-pegawai': 'No Bendel Pegawai',
+            'tambah-pegawai': 'Tambah/Edit Pegawai',
+            'cari-pegawai': 'Cari Pegawai',
+            'sk-cpns': 'SK CPNS & PNS',
+            'sk-pangkat': 'SK Kenaikan Pangkat',
+            'sk-kgb': 'SK KGB',
+            'cuti': 'Cuti Pegawai',
+            'mutasi': 'Mutasi',
+            'diklat': 'Diklat & Sertifikat',
+            'pensiun': 'Pensiun',
+            'cari-nip': 'Pencarian Berdasarkan NIP/Nama',
+            'cari-dokumen': 'Pencarian Berdasarkan Jenis Dokumen',
+            'cari-tahun': 'Pencarian Berdasarkan Tahun',
+            'cari-unit': 'Pencarian Berdasarkan Unit Kerja',
+            'rekap-arsip': 'Rekap Arsip Pegawai',
+            'statistik-dokumen': 'Statistik per Jenis Dokumen',
+            'retensi': 'Laporan Retensi & Pemusnahan',
+            'akun': 'Manajemen Akun Pengguna',
+            'hak-akses': 'Hak Akses Pengguna',
+            'klasifikasi': 'Kode Klasifikasi Arsip',
+            'backup': 'Backup & Restore',
+            'bantuan': 'Panduan & Bantuan'
+        };
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebarOpen) {
+                sidebar.classList.add('-translate-x-full', 'hidden');
+            } else {
+                sidebar.classList.remove('-translate-x-full', 'hidden');
+            }
+            sidebarOpen = !sidebarOpen;
+        }
+
+        function toggleSubmenu(menu) {
+            const submenu = document.getElementById(menu + '-submenu');
+            const arrow = document.getElementById(menu + '-arrow');
+            
+            if (submenu.classList.contains('hidden')) {
+                submenu.classList.remove('hidden');
+                arrow.textContent = '▲';
+            } else {
+                submenu.classList.add('hidden');
+                arrow.textContent = '▼';
+            }
+        }
+
+        function showPage(pageId) {
+            const title = pages[pageId] || 'Dashboard';
+            document.getElementById('page-title').textContent = title;
+            
+            // Remove active class from all links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to clicked link
+            event.target.closest('a, button').classList.add('active');
+            
+            // Update content based on page
+            const content = document.getElementById('content');
+            
+            if (pageId === 'daftar-pegawai') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold">Daftar Pegawai</h3>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                + Tambah Pegawai
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <input type="text" placeholder="Cari pegawai..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NIP</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Pangkat/Gol</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit Kerja</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">198501012010011001</td>
+                                        <td class="px-4 py-3 text-sm">Ahmad Sudrajat, S.Pd</td>
+                                        <td class="px-4 py-3 text-sm">Penata / III/c</td>
+                                        <td class="px-4 py-3 text-sm">Dinas Pendidikan</td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span></td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <button class="text-blue-600 hover:underline mr-2">Detail</button>
+                                            <button class="text-yellow-600 hover:underline">Edit</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">197512101998031003</td>
+                                        <td class="px-4 py-3 text-sm">Budi Santoso, S.E</td>
+                                        <td class="px-4 py-3 text-sm">Pembina / IV/a</td>
+                                        <td class="px-4 py-3 text-sm">Bagian Keuangan</td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span></td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <button class="text-blue-600 hover:underline mr-2">Detail</button>
+                                            <button class="text-yellow-600 hover:underline">Edit</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <p class="text-sm text-gray-600">Menampilkan 1-10 dari 1,234 pegawai</p>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 border rounded hover:bg-gray-50">Prev</button>
+                                <button class="px-3 py-1 bg-blue-600 text-white rounded">1</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-50">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (pageId === 'tambah-pegawai') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6 max-w-4xl">
+                        <h3 class="text-xl font-semibold mb-6">Tambah Data Pegawai Baru</h3>
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">NIP</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="198501012010011001">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">No Bendel</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="BD-2025-001">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama lengkap dengan gelar">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Lahir</label>
+                                    <input type="date" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Pangkat/Golongan</label>
+                                    <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>Pilih Pangkat</option>
+                                        <option>Juru Muda / I/a</option>
+                                        <option>Juru Muda Tingkat I / I/b</option>
+                                        <option>Juru / I/c</option>
+                                        <option>Pengatur Muda / II/a</option>
+                                        <option>Pengatur Muda Tingkat I / II/b</option>
+                                        <option>Pengatur / II/c</option>
+                                        <option>Penata Muda / III/a</option>
+                                        <option>Penata Muda Tingkat I / III/b</option>
+                                        <option>Penata / III/c</option>
+                                        <option>Pembina / IV/a</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Unit Kerja</label>
+                                    <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>Pilih Unit Kerja</option>
+                                        <option>Dinas Pendidikan</option>
+                                        <option>Dinas Kesehatan</option>
+                                        <option>Biro IT</option>
+                                        <option>Bagian Keuangan</option>
+                                        <option>Bagian Umum</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status Kepegawaian</label>
+                                    <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>CPNS</option>
+                                        <option>PNS</option>
+                                        <option>PPPK</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status Aktif</label>
+                                    <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>Aktif</option>
+                                        <option>Cuti</option>
+                                        <option>Pensiun</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Simpan Data</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            } else if (pageId === 'cari-pegawai') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-xl font-semibold mb-6">Pencarian Pegawai</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cari berdasarkan NIP</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan NIP">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cari berdasarkan Nama</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan Nama">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Unit Kerja</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Semua Unit</option>
+                                    <option>Dinas Pendidikan</option>
+                                    <option>Dinas Kesehatan</option>
+                                    <option>Biro IT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            🔍 Cari Pegawai
+                        </button>
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg text-center text-gray-500">
+                            Masukkan kriteria pencarian dan klik tombol "Cari Pegawai"
+                        </div>
+                    </div>
+                `;
+            } else if (pageId === 'sk-cpns') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold">SK CPNS & PNS</h3>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                + Upload SK Baru
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-3xl">📄</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">SK PNS</span>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 mb-1">Ahmad Sudrajat, S.Pd</h4>
+                                <p class="text-sm text-gray-600 mb-1">NIP: 198501012010011001</p>
+                                <p class="text-sm text-gray-600 mb-3">No SK: 800/2010/SK-PNS</p>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200">Lihat</button>
+                                    <button class="flex-1 px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded hover:bg-gray-200">Download</button>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-3xl">📄</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">SK CPNS</span>
+                                </div>
+                                <h4 class="font-semibold text-gray-800 mb-1">Siti Nurhaliza, S.Kom</h4>
+                                <p class="text-sm text-gray-600 mb-1">NIP: 199003152015022002</p>
+                                <p class="text-sm text-gray-600 mb-3">No SK: 755/2015/SK-CPNS</p>
+                                <div class="flex space-x-2">
+                                    <button class="flex-1 px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded hover:bg-blue-200">Lihat</button>
+                                    <button class="flex-1 px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded hover:bg-gray-200">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (pageId === 'rekap-arsip') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold">Rekap Arsip Pegawai</h3>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                📥 Export Excel
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="border rounded-lg p-4">
+                                <p class="text-sm text-gray-600">Total Arsip</p>
+                                <p class="text-2xl font-bold text-blue-600 mt-2">5,678</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <p class="text-sm text-gray-600">Arsip Tahun Ini</p>
+                                <p class="text-2xl font-bold text-green-600 mt-2">1,234</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <p class="text-sm text-gray-600">Arsip Bulan Ini</p>
+                                <p class="text-2xl font-bold text-yellow-600 mt-2">234</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <p class="text-sm text-gray-600">Pegawai Terekam</p>
+                                <p class="text-2xl font-bold text-purple-600 mt-2">1,234</p>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Unit Kerja</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jumlah Pegawai</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Arsip</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Terbaru</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">Dinas Pendidikan</td>
+                                        <td class="px-4 py-3 text-sm">456</td>
+                                        <td class="px-4 py-3 text-sm">2,145</td>
+                                        <td class="px-4 py-3 text-sm">2 Oktober 2025</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">Dinas Kesehatan</td>
+                                        <td class="px-4 py-3 text-sm">312</td>
+                                        <td class="px-4 py-3 text-sm">1,543</td>
+                                        <td class="px-4 py-3 text-sm">1 Oktober 2025</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">Biro IT</td>
+                                        <td class="px-4 py-3 text-sm">87</td>
+                                        <td class="px-4 py-3 text-sm">456</td>
+                                        <td class="px-4 py-3 text-sm">30 September 2025</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else if (pageId === 'akun') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold">Manajemen Akun Pengguna</h3>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                + Tambah Akun
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Username</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nama Lengkap</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">admin</td>
+                                        <td class="px-4 py-3 text-sm">Administrator</td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Admin</span></td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span></td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <button class="text-blue-600 hover:underline mr-2">Edit</button>
+                                            <button class="text-red-600 hover:underline">Hapus</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">operator1</td>
+                                        <td class="px-4 py-3 text-sm">Dewi Operator</td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Operator</span></td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Aktif</span></td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <button class="text-blue-600 hover:underline mr-2">Edit</button>
+                                            <button class="text-red-600 hover:underline">Hapus</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Default content untuk halaman lain
+                content.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-xl font-semibold mb-4">${title}</h3>
+                        <p class="text-gray-600">Konten untuk halaman ${title} akan ditampilkan di sini.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>green-800 text-xs rounded-full">Aktif</span></td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <button class="text-blue-600 hover:underline mr-2">Detail</button>
+                                            <button class="text-yellow-600 hover:underline">Edit</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm">199003152015022002</td>
+                                        <td class="px-4 py-3 text-sm">Siti Nurhaliza, S.Kom</td>
+                                        <td class="px-4 py-3 text-sm">Penata Muda / III/a</td>
+                                        <td class="px-4 py-3 text-sm">Biro IT</td>
+                                        <td class="px-4 py-3"><span class="px-2 py-1 bg-green-100 text-
