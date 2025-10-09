@@ -10,12 +10,22 @@ export async function middleware(req: NextRequest) {
 
   if (url.includes("/api")) {
     if (url.includes("/auth")) {
-      if (token) {
-        return NextResponse.json<ResponsePayload>({
-          status: "failed",
-          statusCode: 403,
-          message: "You have been loged in!",
-        });
+      if (req.method === "DELETE") {
+        if (!token) {
+          return NextResponse.json<ResponsePayload>({
+            status: "failed",
+            statusCode: 403,
+            message: "Oops! You already logout!",
+          });
+        }
+      } else {
+        if (token) {
+          return NextResponse.json<ResponsePayload>({
+            status: "failed",
+            statusCode: 403,
+            message: "You have been loged in!",
+          });
+        }
       }
     }
   } else {
