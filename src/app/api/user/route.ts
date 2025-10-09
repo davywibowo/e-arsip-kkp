@@ -8,7 +8,14 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const authHeader = req.headers.get("Authorization");
     const token = authHeader?.replace("Bearer ", "");
-    const response = await UserService.getUserData(token);
+    if (!token) {
+      throw new ResponseError(403, "Oops! Token is required");
+    }
+
+    const response = await UserService.getUserData(
+      token,
+      req.nextUrl.searchParams
+    );
 
     return NextResponse.json<ResponsePayload>(response);
   } catch (error) {

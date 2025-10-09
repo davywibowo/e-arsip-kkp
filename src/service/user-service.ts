@@ -103,38 +103,71 @@ export default class UserService {
   }
 
   static async getUserData(
-    token: string | undefined
-  ): Promise<ResponsePayload<DataUser | null>> {
+    token: string | undefined,
+    query: URLSearchParams
+  ): Promise<ResponsePayload> {
     const dataUser = JWT.verifyToken(token as string | null);
-    let data: DataUser | null;
     if (!dataUser) {
-      data = null;
-    } else {
-      const dataFromDb = await supabase
-        .from("user")
-        .select("*")
-        .eq("username", dataUser.username);
+      return {
+        status: "success",
+        statusCode: 200,
+        message: "Successfully get user data",
+        data: null,
+      };
+    }
+    const dataFromDb = await supabase
+      .from("user")
+      .select("*")
+      .eq("username", dataUser.username);
 
-      if (dataFromDb.error) {
+    if (query.get("all") == "true") {
+      if (dataFromDb.data && dataFromDb.data[0].role !== "ADMIN") {
+        throw new ResponseError(
+          403,
+          "Oops! You don't have any access for this!"
+        );
+      }
+
+      const dataUsers = await supabase.from("user").select("*");
+      if (dataUsers.error) {
         throw new ResponseError(503, "An error while get user data!");
       }
 
-      if (dataFromDb && dataFromDb.data.length === 0) {
+      if (dataUsers && dataUsers.data.length === 0) {
         throw new ResponseError(404, "Oops username is not found!");
       }
 
-      data = {
-        username: dataFromDb.data[0].username,
-        name: dataFromDb.data[0].name,
-        role: dataFromDb.data[0].role,
+      const data = dataUsers.data.map<DataUser>((d) => ({
+        username: d.username,
+        name: d.name,
+        role: d.role,
+      }));
+
+      return {
+        status: "success",
+        message: "Successfully get data User",
+        statusCode: 200,
+        data: data as DataUser[],
       };
+    }
+
+    if (dataFromDb.error) {
+      throw new ResponseError(503, "An error while get user data!");
+    }
+
+    if (dataFromDb && dataFromDb.data.length === 0) {
+      throw new ResponseError(404, "Oops username is not found!");
     }
 
     return {
       status: "success",
       statusCode: 200,
       message: "Successfully get user data",
-      data,
+      data: {
+        username: dataFromDb.data[0].username,
+        name: dataFromDb.data[0].name,
+        role: dataFromDb.data[0].role,
+      },
     };
   }
 }
