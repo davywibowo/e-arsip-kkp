@@ -26,7 +26,6 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +54,6 @@ export default function LoginPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          remember: formData.rememberMe,
         }),
       });
 
@@ -66,14 +64,6 @@ export default function LoginPage() {
       }
 
       setSuccess(true);
-
-      if (data.token) {
-        if (formData.rememberMe) {
-          localStorage.setItem("authToken", data.token);
-        } else {
-          sessionStorage.setItem("authToken", data.token);
-        }
-      }
 
       setTimeout(() => {
         window.location.href = data.redirectUrl || "/dashboard";
@@ -192,25 +182,6 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
-              </div>
-
-              {/* Remember Me */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="rememberMe"
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  className="w-4 h-4 accent-indigo-600 cursor-pointer"
-                />
-                <Label
-                  htmlFor="rememberMe"
-                  className="text-sm text-slate-600 cursor-pointer select-none"
-                >
-                  Remember me for 30 days
-                </Label>
               </div>
 
               {/* Submit Button */}

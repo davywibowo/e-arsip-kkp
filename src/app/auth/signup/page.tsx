@@ -105,7 +105,7 @@ export default function SignupPage() {
               {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-black font-medium">
-                  Full Name
+                  Name
                 </Label>
                 <div className="relative">
                   <IconUser
@@ -114,7 +114,7 @@ export default function SignupPage() {
                   />
                   <Input
                     id="name"
-                    placeholder="Davy wibowo"
+                    placeholder="DFA Foundations"
                     className="pl-10 h-11 rounded-xl border-2 border-black  focus:border-yellow-500 focus:ring-4 focus:ring-indigo-500/10 transition-all text-black"
                     value={formData.name}
                     onChange={(e) =>
