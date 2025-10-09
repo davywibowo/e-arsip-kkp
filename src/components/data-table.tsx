@@ -72,6 +72,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -94,6 +95,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { DialogDemo } from "./dialog";
 
 export const schema = z.object({
   id: z.number(),
@@ -295,28 +297,47 @@ export function DataTable({
         </Label>
 
         <div className="flex justify-between w-full items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <IconLayoutColumns />
-                <span className="hidden lg:inline">Filter By</span>
-                <span className="lg:hidden">Filter</span>
-                <IconChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <ul>
-                <li>NIP lama</li>
-                <li>NIP Baru</li>
-              </ul>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className=" flex items-center order-first rounded-md px-3 bg-slate-300/50">
-            <IconSearch />
+          {/* Search bar di kiri */}
+          <div className="flex items-center rounded-md px-3 bg-slate-300/50 w-[326px]">
+            <IconSearch className="mr-2" />
             <Input
-              className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:font-normal sm:w-94 justify-center"
+              className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:font-normal"
               placeholder="Cari Pegawai..."
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2 transition-colors hover:bg-muted/70"
+                >
+                  <IconLayoutColumns className="h-4 w-4" />
+                  <span className="hidden sm:inline">Filter By</span>
+                  <IconChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                className="w-48 p-1 bg-background shadow-md rounded-md"
+              >
+                <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1">
+                  Pilih Filter
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem className="cursor-pointer hover:bg-muted">
+                  NIP Lama
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-muted">
+                  NIP Baru
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogDemo />
           </div>
         </div>
       </div>
