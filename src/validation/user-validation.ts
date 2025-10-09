@@ -15,10 +15,6 @@ export default class UserValidation {
       confirmPassword: z
         .string({ error: "Please fill confirmation password properly!" })
         .min(6, "Konfirmasi password minimal 6 karakter"),
-      descriptionUser: z
-        .string({ error: "Please fill description properly!" })
-        .min(10, "Description minimal 10 karakter")
-        .max(500, "Description maksimal 500 karakter"),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: "Password dan konfirmasi password harus sama",
