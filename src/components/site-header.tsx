@@ -6,7 +6,7 @@ import ResponseError from "@/error/ResponseError";
 import { cn } from "@/lib/utils";
 import { ResponsePayload } from "@/types";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -16,6 +16,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader(props: SiteHeaderProps) {
   const { token } = props;
+  const pathname = usePathname();
 
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
@@ -55,7 +56,15 @@ export function SiteHeader(props: SiteHeaderProps) {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">Documents</h1>
+        <h1 className="text-base font-medium">
+          {pathname === "/"
+            ? "Dashboard"
+            : pathname === "/data-pegawai"
+            ? "Data Pegawai"
+            : pathname === "/manajemen-pengguna"
+            ? "Manajemen Pengguna"
+            : "E-Arsip App"}
+        </h1>
         <div className="ml-auto flex items-center gap-2">
           {token ? (
             <Button
