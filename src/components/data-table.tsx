@@ -129,7 +129,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     id: "drag",
     header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
+    cell: ({ row }) => (
+      <span>
+        {row.index + 1}. <DragHandle id={row.original.id} />
+      </span>
+    ),
   },
   {
     accessorKey: "Nama Pegawai",
