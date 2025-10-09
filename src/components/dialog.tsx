@@ -29,7 +29,7 @@ export function DialogDemo() {
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
-              <Label htmlFor="name-1">Nama</Label>
+              <Label htmlFor="name-1">Nama Pegawai</Label>
               <Input id="name-1" name="name" placeholder="Cristiano Ronaldo" />
             </div>
             <div className="grid gap-3">
@@ -45,7 +45,7 @@ export function DialogDemo() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="username-1">NO. Arsip</Label>
+              <Label htmlFor="username-1">No. Arsip</Label>
               <Input id="username-1" name="noarsip" placeholder="A 36" />
             </div>
           </div>
