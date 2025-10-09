@@ -1,6 +1,5 @@
-import { DataTable } from "@/components/data-table";
+import TableUser from "@/components/pages/manajemen-pengguna/TableUser";
 import { DataUser, ResponsePayload } from "@/types";
-import data from "@/util/data.json";
 import { cookies } from "next/headers";
 
 export default async function ManajemenPage() {
@@ -23,7 +22,7 @@ export default async function ManajemenPage() {
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          <DataTable data={data} />
+          <TableUser />
         </div>
       </div>
     </div>

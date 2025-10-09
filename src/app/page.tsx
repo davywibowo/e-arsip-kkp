@@ -1,6 +1,5 @@
-import { DataTable } from "@/components/data-table";
+import TableUser from "@/components/pages/manajemen-pengguna/TableUser";
 import { SectionCards } from "@/components/section-cards";
-import data from "@/util/data.json";
 
 export default async function Page() {
   return (
@@ -9,7 +8,7 @@ export default async function Page() {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards />
 
-          <DataTable data={data} />
+          <TableUser />
         </div>
       </div>
     </div>
