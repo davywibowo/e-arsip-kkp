@@ -14,19 +14,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  IconMail,
   IconLock,
   IconEye,
   IconEyeOff,
   IconCheck,
   IconAlertCircle,
 } from "@tabler/icons-react";
+import Validation from "@/validation/Validation";
+import UserValidation from "@/validation/user-validation";
+import ResponseError from "@/error/ResponseError";
+import { ZodError } from "zod";
+import { ResponsePayload } from "@/types";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,29 +55,31 @@ export default function LoginPage() {
     setSuccess(false);
 
     try {
+      Validation.validate(UserValidation.LOGIN, formData);
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
+          username: formData.username,
           password: formData.password,
         }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Invalid email or password");
+      const data = (await response.json()) as ResponsePayload;
+      if (data.status === "failed") {
+        throw new ResponseError(data.statusCode, data.message);
       }
 
-      setSuccess(true);
-
-      setTimeout(() => {
-        window.location.href = data.redirectUrl || "/dashboard";
-      }, 1500);
+      toast.success(data.message);
+      router.push("/");
     } catch (err) {
-      const error = err as Error;
-      setError(error.message || "An unexpected error occurred");
+      if (err instanceof ResponseError) {
+        setError(err.message);
+      } else if (err instanceof ZodError) {
+        setError(err.issues[0].message);
+      } else {
+        setError("An error occured! Please try again later!");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -114,26 +123,22 @@ export default function LoginPage() {
               {/* Email */}
               <div className="space-y-2">
                 <Label
-                  htmlFor="email"
+                  htmlFor="username"
                   className="text-sm font-medium text-black mb-2"
                 >
-                  Email Address
+                  Username
                 </Label>
                 <div className="relative">
-                  <IconMail
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-black"
-                    size={20}
-                  />
                   <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="DFA Academy"
+                    value={formData.username}
                     onChange={handleInputChange}
                     disabled={isLoading}
                     required
-                    className="pl-10 h-11 rounded-xl border-2 border-black focus:border-yellow-500 focus:ring-4 focus:ring-indigo-500/10 transition-all text-black"
+                    className="h-11 rounded-xl border-2 border-black focus:border-yellow-500 focus:ring-4 focus:ring-indigo-500/10 transition-all text-black"
                   />
                 </div>
               </div>
@@ -147,12 +152,6 @@ export default function LoginPage() {
                   >
                     Password
                   </Label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
-                  >
-                    Forgot?
-                  </Link>
                 </div>
                 <div className="relative">
                   <IconLock

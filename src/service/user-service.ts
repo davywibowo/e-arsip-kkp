@@ -2,7 +2,7 @@ import ResponseError from "@/error/ResponseError";
 import Bcrypt from "@/lib/bcrypt";
 import JWT from "@/lib/jwt";
 import { supabase } from "@/lib/supabase/server";
-import { DataSignup, ResponsePayload } from "@/types";
+import { DataLogin, DataSignup, ResponsePayload } from "@/types";
 import { cookies } from "next/headers";
 
 export default class UserService {
@@ -54,6 +54,51 @@ export default class UserService {
       status: "success",
       message: "Successfully signup!",
       statusCode: 201,
+    };
+  }
+
+  static async LoginUser(data: DataLogin): Promise<ResponsePayload> {
+    const cookieStore = await cookies();
+    const dataFromDb = await supabase
+      .from("user")
+      .select("*")
+      .eq("username", data.username);
+    if (dataFromDb.error) {
+      throw new ResponseError(
+        503,
+        "Error while login, please try again later!"
+      );
+    }
+
+    if (dataFromDb && dataFromDb.data.length === 0) {
+      throw new ResponseError(404, "Oops username is not registered!");
+    }
+
+    const isPasswordValid = await Bcrypt.comparePassword(
+      data.password,
+      dataFromDb.data[0].password
+    );
+
+    if (!isPasswordValid) {
+      throw new ResponseError(403, "Oops! Password doesn't match!");
+    }
+
+    const token = JWT.generateToken({
+      username: data.username,
+      password: dataFromDb.data[0].password,
+    });
+
+    cookieStore.set({
+      name: "token",
+      value: token,
+      httpOnly: true,
+      maxAge: 60 * 60,
+    });
+
+    return {
+      status: "success",
+      statusCode: 200,
+      message: "Successfully login!",
     };
   }
 }

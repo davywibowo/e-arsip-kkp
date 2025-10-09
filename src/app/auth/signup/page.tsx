@@ -70,6 +70,11 @@ export default function SignupPage() {
         setMessage({ type: "error", text: err.message });
       } else if (err instanceof ZodError) {
         setMessage({ type: "error", text: err.issues[0].message });
+      } else {
+        setMessage({
+          type: "error",
+          text: "An error occured! Please try again later",
+        });
       }
     } finally {
       setLoading(false);

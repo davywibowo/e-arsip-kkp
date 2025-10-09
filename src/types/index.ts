@@ -11,3 +11,8 @@ export interface DataSignup {
   password: string;
   confirmPassword: string;
 }
+
+export interface DataLogin {
+  username: string;
+  password: string;
+}
