@@ -1,17 +1,15 @@
 import ResponseError from "@/error/ResponseError";
 import UserService from "@/service/user-service";
 import { ResponsePayload } from "@/types";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function GET(_req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
     const response = await UserService.getUserData(token);
+
     return NextResponse.json<ResponsePayload>(response);
   } catch (error) {
     console.log("Error User Route GET Metode:", error);

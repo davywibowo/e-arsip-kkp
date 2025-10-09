@@ -126,6 +126,7 @@ export default class UserService {
       data = {
         username: dataFromDb.data[0].username,
         name: dataFromDb.data[0].name,
+        role: dataFromDb.data[0].role,
       };
     }
 

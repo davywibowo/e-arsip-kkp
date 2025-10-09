@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import {
   IconChartBar,
   IconDashboard,
@@ -19,38 +18,40 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
+import { DataUser } from "@/types";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Data Pegawai",
-      url: "#",
-      icon: IconUsers,
-    },
-    {
-      title: "Manajemen Pengguna",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-  ],
-};
+type AppSidebarProps = {
+  dataUser: DataUser | null;
+} & React.ComponentProps<typeof Sidebar>;
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ dataUser, ...props }: AppSidebarProps) {
+  const data = {
+    user: dataUser,
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "#",
+        icon: IconDashboard,
+      },
+      {
+        title: "Data Pegawai",
+        url: "#",
+        icon: IconUsers,
+      },
+      {
+        title: "Manajemen Pengguna",
+        url: "#",
+        icon: IconChartBar,
+      },
+      {
+        title: "Settings",
+        url: "#",
+        icon: IconSettings,
+      },
+    ],
+  };
+
+  console.log(data.user);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -71,9 +72,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      {data.user ? (
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+      ) : null}
     </Sidebar>
   );
 }
