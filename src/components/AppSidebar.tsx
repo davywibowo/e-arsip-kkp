@@ -3,7 +3,6 @@ import {
   IconChartBar,
   IconDashboard,
   IconInnerShadowTop,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 
@@ -25,33 +24,25 @@ type AppSidebarProps = {
 } & React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ dataUser, ...props }: AppSidebarProps) {
+  const navMain = [
+    { title: "Dashboard", url: "/", icon: IconDashboard },
+    { title: "Data Pegawai", url: "/data-pegawai", icon: IconUsers },
+    ...(dataUser?.role === "ADMIN"
+      ? [
+          {
+            title: "Manajemen Pengguna",
+            url: "/manajemen-pengguna",
+            icon: IconChartBar,
+          },
+        ]
+      : []),
+  ];
+
   const data = {
     user: dataUser,
-    navMain: [
-      {
-        title: "Dashboard",
-        url: "#",
-        icon: IconDashboard,
-      },
-      {
-        title: "Data Pegawai",
-        url: "#",
-        icon: IconUsers,
-      },
-      {
-        title: "Manajemen Pengguna",
-        url: "#",
-        icon: IconChartBar,
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: IconSettings,
-      },
-    ],
+    navMain,
   };
 
-  console.log(data.user);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
