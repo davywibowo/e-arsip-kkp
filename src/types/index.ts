@@ -16,3 +16,8 @@ export interface DataLogin {
   username: string;
   password: string;
 }
+
+export interface DataUser {
+  name: string;
+  username: string;
+}
