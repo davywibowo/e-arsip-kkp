@@ -18,12 +18,15 @@ import {
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
 import { DataUser } from "@/types";
+import { usePathname } from "next/navigation";
 
 type AppSidebarProps = {
   dataUser: DataUser | null;
 } & React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ dataUser, ...props }: AppSidebarProps) {
+  const pathname = usePathname();
+  if (pathname.includes("/auth")) return null;
   const navMain = [
     { title: "Dashboard", url: "/", icon: IconDashboard },
     { title: "Data Pegawai", url: "/data-pegawai", icon: IconUsers },

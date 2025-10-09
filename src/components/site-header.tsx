@@ -17,9 +17,10 @@ interface SiteHeaderProps {
 export function SiteHeader(props: SiteHeaderProps) {
   const { token } = props;
   const pathname = usePathname();
-
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
+  
+  if (pathname.includes("/auth")) return null;
 
   async function handleLogout() {
     setLoading(true);

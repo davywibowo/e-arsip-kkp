@@ -1,7 +1,24 @@
 import { DataTable } from "@/components/data-table";
+import { DataUser, ResponsePayload } from "@/types";
 import data from "@/util/data.json";
+import { cookies } from "next/headers";
 
-export default function ManajemenPage() {
+export default async function ManajemenPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://e-arsip-kkp.vercel.app"
+      : "http://localhost:3000";
+  const response = await fetch(baseUrl + "/api/user?all=true", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const dataResponse = (await response.json()) as ResponsePayload<DataUser[]>;
+  console.log(dataResponse);
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
