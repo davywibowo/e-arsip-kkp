@@ -1,14 +1,28 @@
 import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import data from "@/util/data.json";
 import { AppSidebar } from "@/components/AppSidebar";
 import { cookies } from "next/headers";
+import { DataUser, ResponsePayload } from "@/types";
 
 export default async function Page() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
+
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "https://e-arsip-kkp.vercel.app"
+      : "http://localhost:3000";
+
+  const response = await fetch(baseUrl + "/api/user", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const dataResponse =
+    (await response.json()) as ResponsePayload<DataUser | null>;
 
   return (
     <SidebarProvider
@@ -19,7 +33,10 @@ export default async function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar
+        variant="inset"
+        dataUser={dataResponse.status === "failed" ? null : dataResponse.data!}
+      />
       <SidebarInset>
         <SiteHeader token={token} />
         <div className="flex flex-1 flex-col">
