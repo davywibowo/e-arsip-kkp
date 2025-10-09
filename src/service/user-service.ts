@@ -52,7 +52,7 @@ export default class UserService {
 
     return {
       status: "success",
-      message: "Successfully create one user",
+      message: "Successfully signup!",
       statusCode: 201,
     };
   }

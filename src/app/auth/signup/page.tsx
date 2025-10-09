@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -19,6 +18,13 @@ import {
   IconCheck,
   IconAlertCircle,
 } from "@tabler/icons-react";
+import { ResponsePayload } from "@/types";
+import ResponseError from "@/error/ResponseError";
+import Validation from "@/validation/Validation";
+import UserValidation from "@/validation/user-validation";
+import { ZodError } from "zod";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -32,6 +38,7 @@ export default function SignupPage() {
     type: "error" | "success";
     text: string;
   } | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,23 +51,26 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
+      Validation.validate(UserValidation.CREATEUSER, formData);
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Signup failed");
+      const data = (await res.json()) as ResponsePayload;
+      if (data.status === "failed") {
+        throw new ResponseError(data.statusCode, data.message);
+      }
 
-      setMessage({
-        type: "success",
-        text: "Signup successful! Redirecting...",
-      });
-      setTimeout(() => (window.location.href = "/auth/login"), 1500);
+      toast.success(data.message);
+      router.push("/");
     } catch (err) {
-      if (err instanceof Error)
+      if (err instanceof ResponseError) {
         setMessage({ type: "error", text: err.message });
+      } else if (err instanceof ZodError) {
+        setMessage({ type: "error", text: err.issues[0].message });
+      }
     } finally {
       setLoading(false);
     }
