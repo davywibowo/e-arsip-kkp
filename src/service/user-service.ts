@@ -2,7 +2,7 @@ import ResponseError from "@/error/ResponseError";
 import Bcrypt from "@/lib/bcrypt";
 import JWT from "@/lib/jwt";
 import { supabase } from "@/lib/supabase/server";
-import { DataLogin, DataSignup, ResponsePayload } from "@/types";
+import { DataLogin, DataSignup, DataUser, ResponsePayload } from "@/types";
 import { cookies } from "next/headers";
 
 export default class UserService {
@@ -99,6 +99,41 @@ export default class UserService {
       status: "success",
       statusCode: 200,
       message: "Successfully login!",
+    };
+  }
+
+  static async getUserData(
+    token: string | undefined
+  ): Promise<ResponsePayload<DataUser | null>> {
+    const dataUser = JWT.verifyToken(token as string | null);
+    let data: DataUser | null;
+    if (!dataUser) {
+      data = null;
+    } else {
+      const dataFromDb = await supabase
+        .from("user")
+        .select("*")
+        .eq("username", dataUser.username);
+
+      if (dataFromDb.error) {
+        throw new ResponseError(503, "An error while get user data!");
+      }
+
+      if (dataFromDb && dataFromDb.data.length === 0) {
+        throw new ResponseError(404, "Oops username is not found!");
+      }
+
+      data = {
+        username: dataFromDb.data[0].username,
+        name: dataFromDb.data[0].name,
+      };
+    }
+
+    return {
+      status: "success",
+      statusCode: 200,
+      message: "Successfully get user data",
+      data,
     };
   }
 }
