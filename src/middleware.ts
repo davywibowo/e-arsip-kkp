@@ -34,6 +34,12 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/", req.url));
       }
     }
+
+    if (url.includes("/manajemen-pengguna")) {
+      if (!token) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    }
   }
 
   return NextResponse.next();

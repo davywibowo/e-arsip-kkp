@@ -133,10 +133,6 @@ export default class UserService {
         throw new ResponseError(503, "An error while get user data!");
       }
 
-      if (dataUsers && dataUsers.data.length === 0) {
-        throw new ResponseError(404, "Oops username is not found!");
-      }
-
       const data = dataUsers.data.map<DataUser>((d) => ({
         id: d.id,
         username: d.username,
@@ -149,6 +145,39 @@ export default class UserService {
         message: "Successfully get data User",
         statusCode: 200,
         data: data as DataUser[],
+      };
+    }
+
+    const v = query.get("q");
+    if (v) {
+      if (dataFromDb.data && dataFromDb.data[0].role !== "ADMIN") {
+        throw new ResponseError(
+          403,
+          "Oops! You don't have any access for this!"
+        );
+      }
+
+      const dataUsers = await supabase
+        .from("user")
+        .select("*")
+        .eq("username", v);
+
+      if (dataUsers.error) {
+        throw new ResponseError(503, "An error while get user data!");
+      }
+
+      const data = dataUsers.data.map<DataUser>((d) => ({
+        id: d.id,
+        username: d.username,
+        name: d.name,
+        role: d.role,
+      }));
+
+      return {
+        status: "success",
+        statusCode: 200,
+        message: "Successfully get data user",
+        data: data as DataUser[]
       };
     }
 

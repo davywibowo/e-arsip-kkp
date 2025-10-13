@@ -19,13 +19,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
   IconChevronsLeft,
   IconChevronsRight,
-  IconLayoutColumns,
-  IconSearch,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -45,15 +42,6 @@ import {
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -71,8 +59,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { DialogDemo } from "./dialog";
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 export const schema = z.object({
   id: z.number(),
@@ -116,11 +103,9 @@ function DraggableRow<TData extends { id: string | number }>({
 export function DataTable<TData extends { id: string }>({
   data: initialData,
   columns,
-  isAdd,
 }: {
   data: TData[];
   columns: ColumnDef<TData>[];
-  isAdd?: boolean;
 }) {
   const [data, setData] = useState(() => initialData);
   const [rowSelection, setRowSelection] = useState({});
@@ -137,11 +122,14 @@ export function DataTable<TData extends { id: string }>({
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {})
   );
-
   const dataIds = useMemo<UniqueIdentifier[]>(
     () => data?.map(({ id }) => id) || [],
     [data]
   );
+
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   const table = useReactTable({
     data,
@@ -184,56 +172,6 @@ export function DataTable<TData extends { id: string }>({
       defaultValue="outline"
       className="w-full flex-col justify-start gap-6"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
-        <Label htmlFor="view-selector" className="sr-only">
-          View
-        </Label>
-
-        <div className="flex justify-between w-full items-center gap-2">
-          {/* Search bar di kiri */}
-          <div className="flex items-center rounded-md px-3 bg-slate-300/50 w-[326px]">
-            <IconSearch className="mr-2" />
-            <Input
-              className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:font-normal"
-              placeholder="Cari Pegawai..."
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2 transition-colors hover:bg-muted/70"
-                >
-                  <IconLayoutColumns className="h-4 w-4" />
-                  <span className="hidden sm:inline">Filter By</span>
-                  <IconChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent
-                align="end"
-                className="w-48 p-1 bg-background shadow-md rounded-md"
-              >
-                <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1">
-                  Pilih Filter
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem className="cursor-pointer hover:bg-muted">
-                  NIP Lama
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-muted">
-                  NIP Baru
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {isAdd && <DialogDemo />}
-          </div>
-        </div>
-      </div>
       <TabsContent
         value="outline"
         className="relative flex flex-col gap-4 overflow-auto px-4 lg:px-6"

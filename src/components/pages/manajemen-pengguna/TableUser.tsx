@@ -1,5 +1,10 @@
 "use client";
-import { IconDotsVertical } from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconDotsVertical,
+  IconLayoutColumns,
+  IconSearch,
+} from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
 import z from "zod";
 import { Button } from "@/components/ui/button";
@@ -7,6 +12,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -14,6 +20,8 @@ import { DataTable } from "@/components/data-table";
 import { DragHandle } from "@/components/Draghandler";
 import { ResponsePayload } from "@/types";
 import RoleCell from "@/components/RoleCell";
+import { Input } from "@/components/ui/input";
+import { useMemo, useState } from "react";
 
 export const schemaUser = z.object({
   id: z.string({ error: "Id must be a string" }),
@@ -25,9 +33,9 @@ export const schemaUser = z.object({
 interface TableUserProps {
   response: ResponsePayload<z.infer<typeof schemaUser>[]>;
 }
-
 export default function TableUser(props: TableUserProps) {
   const { response } = props;
+  const [valueSearch, setValueSearch] = useState("");
 
   const columns: ColumnDef<z.infer<typeof schemaUser>>[] = [
     {
@@ -87,9 +95,81 @@ export default function TableUser(props: TableUserProps) {
     },
   ];
 
-  const data: z.infer<typeof schemaUser>[] = response.data || [];
+  const filteredData = useMemo(() => {
+    const data: z.infer<typeof schemaUser>[] = response.data || [];
+    const filteredByUsername = data.filter((d) =>
+      d.username.toLowerCase().includes(valueSearch.toLowerCase())
+    );
+
+    if (filteredByUsername.length === 0) {
+      const filteredByName = data.filter((d) =>
+        d.name.toLowerCase().includes(valueSearch.toLowerCase())
+      );
+
+      if (filteredByName.length === 0) {
+        const filteredByRole = data.filter((d) =>
+          d.role.toLowerCase().includes(valueSearch.toLowerCase())
+        );
+
+        return filteredByRole;
+      }
+
+      return filteredByName;
+    }
+
+    return filteredByUsername;
+  }, [valueSearch, response.data]);
 
   return (
-    <DataTable<z.infer<typeof schemaUser>> data={data} columns={columns} />
+    <>
+      <div className="w-full flex justify-between px-6">
+        <div className="flex items-center rounded-md px-3 bg-slate-300/50 w-[326px]">
+          <IconSearch className="mr-2" />
+          <Input
+            value={valueSearch}
+            onChange={(e) => setValueSearch(e.target.value)}
+            type="search"
+            className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:font-normal"
+            placeholder="Cari Pegawai..."
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 transition-colors hover:bg-muted/70"
+              >
+                <IconLayoutColumns className="h-4 w-4" />
+                <span className="hidden sm:inline">Filter By</span>
+                <IconChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="end"
+              className="w-48 p-1 bg-background shadow-md rounded-md"
+            >
+              <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1">
+                Pilih Filter
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="cursor-pointer hover:bg-muted">
+                NIP Lama
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-muted">
+                NIP Baru
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <DataTable<z.infer<typeof schemaUser>>
+        data={filteredData}
+        columns={columns}
+      />
+    </>
   );
 }
