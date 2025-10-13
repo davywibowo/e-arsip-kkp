@@ -13,8 +13,7 @@ import {
 import { DataTable } from "@/components/data-table";
 import { DragHandle } from "@/components/Draghandler";
 import { ResponsePayload } from "@/types";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import RoleCell from "@/components/RoleCell";
 
 export const schemaUser = z.object({
   id: z.string({ error: "Id must be a string" }),
@@ -36,7 +35,7 @@ export default function TableUser(props: TableUserProps) {
       header: () => null,
       cell: ({ row }) => (
         <span>
-          {row.index + 1}. <DragHandle id={row.original.id} />
+          {row.index + 1} <DragHandle id={row.original.id} />
         </span>
       ),
     },
@@ -60,14 +59,7 @@ export default function TableUser(props: TableUserProps) {
       accessorKey: "role",
       header: "ROLE",
       cell: ({ row }) => {
-        return (
-          <Badge
-            variant={"default"}
-            className={cn(row.original.role === "ADMIN" ? "bg-blue-500" : "")}
-          >
-            {row.original.role}
-          </Badge>
-        );
+        return <RoleCell roleUser={row.original.role} />;
       },
       enableHiding: false,
     },

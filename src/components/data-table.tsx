@@ -116,9 +116,11 @@ function DraggableRow<TData extends { id: string | number }>({
 export function DataTable<TData extends { id: string }>({
   data: initialData,
   columns,
+  isAdd,
 }: {
   data: TData[];
   columns: ColumnDef<TData>[];
+  isAdd?: boolean;
 }) {
   const [data, setData] = useState(() => initialData);
   const [rowSelection, setRowSelection] = useState({});
@@ -228,7 +230,7 @@ export function DataTable<TData extends { id: string }>({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <DialogDemo />
+            {isAdd && <DialogDemo />}
           </div>
         </div>
       </div>
