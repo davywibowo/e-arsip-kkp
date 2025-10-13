@@ -1,4 +1,4 @@
-import TableUser from "@/components/pages/manajemen-pengguna/TableUser";
+import TablePegawai from "@/components/pages/data-pegawai/TablePegawai";
 import { SectionCards } from "@/components/section-cards";
 
 export default async function Page() {
@@ -8,7 +8,7 @@ export default async function Page() {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards />
 
-          <TableUser />
+          <TablePegawai />
         </div>
       </div>
     </div>

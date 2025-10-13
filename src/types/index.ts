@@ -18,6 +18,7 @@ export interface DataLogin {
 }
 
 export interface DataUser {
+  id: string;
   name: string;
   username: string;
   role: "USER" | "ADMIN";

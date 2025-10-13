@@ -1,9 +1,7 @@
 "use client";
-import data from "@/util/data.json";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
 import z from "zod";
-import TableCellViewer from "@/components/TableCellViewer";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,11 +10,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTable, schema } from "@/components/data-table";
+import { DataTable } from "@/components/data-table";
 import { DragHandle } from "@/components/Draghandler";
+import { ResponsePayload } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-export default function TableUser() {
-  const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export const schemaUser = z.object({
+  id: z.string({ error: "Id must be a string" }),
+  name: z.string({ error: "Fill name properly!" }),
+  username: z.string({ error: "Fill username properly!" }),
+  role: z.enum(["USER", "ADMIN"], { error: "Role must be a USER or ADMIN" }),
+});
+
+interface TableUserProps {
+  response: ResponsePayload<z.infer<typeof schemaUser>[]>;
+}
+
+export default function TableUser(props: TableUserProps) {
+  const { response } = props;
+
+  const columns: ColumnDef<z.infer<typeof schemaUser>>[] = [
     {
       id: "drag",
       header: () => null,
@@ -27,38 +41,36 @@ export default function TableUser() {
       ),
     },
     {
-      accessorKey: "Nama Pegawai",
-      header: "Nama Pegawai",
+      accessorKey: "username",
+      header: "Username",
       cell: ({ row }) => {
-        return <TableCellViewer item={row.original} />;
+        return <span>{row.original.username}</span>;
       },
       enableHiding: false,
     },
     {
-      accessorKey: "nip lama",
-      header: "NIP Lama",
+      accessorKey: "name",
+      header: "Name",
       cell: ({ row }) => {
-        return <TableCellViewer item={row.original} />;
+        return <span>{row.original.name}</span>;
       },
       enableHiding: false,
     },
     {
-      accessorKey: "nip baru",
-      header: "NIP Baru",
+      accessorKey: "role",
+      header: "ROLE",
       cell: ({ row }) => {
-        return <TableCellViewer item={row.original} />;
+        return (
+          <Badge
+            variant={"default"}
+            className={cn(row.original.role === "ADMIN" ? "bg-blue-500" : "")}
+          >
+            {row.original.role}
+          </Badge>
+        );
       },
       enableHiding: false,
     },
-    {
-      accessorKey: "no.arsip",
-      header: "No. Arsip",
-      cell: ({ row }) => {
-        return <TableCellViewer item={row.original} />;
-      },
-      enableHiding: false,
-    },
-
     {
       id: "actions",
       cell: () => (
@@ -75,8 +87,6 @@ export default function TableUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Make a copy</DropdownMenuItem>
-            <DropdownMenuItem>Favorite</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
           </DropdownMenuContent>
@@ -84,5 +94,10 @@ export default function TableUser() {
       ),
     },
   ];
-  return <DataTable data={data} columns={columns} />;
+
+  const data: z.infer<typeof schemaUser>[] = response.data || [];
+
+  return (
+    <DataTable<z.infer<typeof schemaUser>> data={data} columns={columns} />
+  );
 }

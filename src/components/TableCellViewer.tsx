@@ -52,11 +52,7 @@ const chartData = [
   { month: "June", desktop: 214, mobile: 140 },
 ];
 
-export default function TableCellViewer({
-  item,
-}: {
-  item: z.infer<typeof schema>;
-}) {
+export default function TableCellViewer<TData>({ item }: { item: TData }) {
   const isMobile = useIsMobile();
 
   return (

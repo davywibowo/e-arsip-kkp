@@ -84,7 +84,11 @@ export const schema = z.object({
   reviewer: z.string(),
 });
 
-function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
+function DraggableRow<TData extends { id: string | number }>({
+  row,
+}: {
+  row: Row<TData>;
+}) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
   });
@@ -109,12 +113,12 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
   );
 }
 
-export function DataTable({
+export function DataTable<TData extends { id: string }>({
   data: initialData,
   columns,
 }: {
-  data: z.infer<typeof schema>[];
-  columns: ColumnDef<z.infer<typeof schema>>[];
+  data: TData[];
+  columns: ColumnDef<TData>[];
 }) {
   const [data, setData] = useState(() => initialData);
   const [rowSelection, setRowSelection] = useState({});

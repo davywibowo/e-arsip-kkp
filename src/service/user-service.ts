@@ -138,6 +138,7 @@ export default class UserService {
       }
 
       const data = dataUsers.data.map<DataUser>((d) => ({
+        id: d.id,
         username: d.username,
         name: d.name,
         role: d.role,
