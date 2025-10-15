@@ -23,3 +23,12 @@ export interface DataUser {
   username: string;
   role: "USER" | "ADMIN";
 }
+
+export interface DataPegawai {
+  id: string;
+  namaPegawai: string;
+  nipLama: string;
+  nipBaru: string;
+  noArsip: string;
+}
+

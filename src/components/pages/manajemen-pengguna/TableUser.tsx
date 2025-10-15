@@ -1,10 +1,5 @@
 "use client";
-import {
-  IconChevronDown,
-  IconDotsVertical,
-  IconLayoutColumns,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconDotsVertical, IconSearch } from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
 import z from "zod";
 import { Button } from "@/components/ui/button";
@@ -12,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -132,38 +126,6 @@ export default function TableUser(props: TableUserProps) {
             className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:font-normal"
             placeholder="Cari Pegawai..."
           />
-        </div>
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 transition-colors hover:bg-muted/70"
-              >
-                <IconLayoutColumns className="h-4 w-4" />
-                <span className="hidden sm:inline">Filter By</span>
-                <IconChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              className="w-48 p-1 bg-background shadow-md rounded-md"
-            >
-              <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1">
-                Pilih Filter
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem className="cursor-pointer hover:bg-muted">
-                NIP Lama
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-muted">
-                NIP Baru
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
       <DataTable<z.infer<typeof schemaUser>>

@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,15 +12,79 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PegawaiValidation from "@/validation/pegawai-validation";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import ResponseError from "@/error/ResponseError";
+import toast from "react-hot-toast";
+import { ResponsePayload } from "@/types";
+import Loader from "./Loader";
 
-export function DialogDemo() {
+export function DialogAdd() {
+  const formData = useForm<z.infer<typeof PegawaiValidation.CREATEPEGAWAI>>({
+    resolver: zodResolver(PegawaiValidation.CREATEPEGAWAI),
+    mode: "onChange",
+    defaultValues: {
+      namaPegawai: "",
+      nipBaru: "",
+      nipLama: "",
+      noArsip: "",
+    },
+  });
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  async function handleSubmit(
+    values: z.infer<typeof PegawaiValidation.CREATEPEGAWAI>
+  ) {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/pegawai", {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const dataResponse = (await response.json()) as ResponsePayload;
+      if (dataResponse.status === "failed") {
+        throw new ResponseError(dataResponse.statusCode, dataResponse.message);
+      }
+
+      toast.success(dataResponse.message);
+    } catch (error) {
+      if (error instanceof ResponseError) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occured! Please try again later");
+      }
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  }
+
   return (
-    <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button variant="outline">Add</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!loading) setOpen(nextOpen);
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button variant="outline">Add</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            formData.handleSubmit(handleSubmit)();
+          }}
+          className="space-y-5"
+        >
           <DialogHeader>
             <DialogTitle>Add Profile</DialogTitle>
             <DialogDescription>
@@ -29,34 +94,86 @@ export function DialogDemo() {
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
-              <Label htmlFor="name-1">Nama Pegawai</Label>
-              <Input id="name-1" name="name" placeholder="Cristiano Ronaldo" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">NIP Lama</Label>
-              <Input id="username-1" name="niplama" placeholder="13386652" />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="username-1">NIP Baru</Label>
+              <Label htmlFor="namaPegawai">Nama Pegawai</Label>
               <Input
-                id="username-1"
-                name="nipbaru"
-                placeholder="19659867 198754 1 001"
+                id="namaPegawai"
+                placeholder="Cristiano Ronaldo"
+                {...formData.register("namaPegawai")}
               />
+
+              {formData.formState.errors.namaPegawai && (
+                <span className="text-red-600 text-xs font-semibold">
+                  {formData.formState.errors.namaPegawai.message}
+                </span>
+              )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="username-1">No. Arsip</Label>
-              <Input id="username-1" name="noarsip" placeholder="A 36" />
+              <Label htmlFor="nipLama">NIP Lama</Label>
+              <Input
+                id="nipLama"
+                placeholder="13386652"
+                {...formData.register("nipLama")}
+              />
+              {formData.formState.errors.nipLama && (
+                <span className="text-red-600 text-xs font-semibold">
+                  {formData.formState.errors.nipLama.message}
+                </span>
+              )}
+            </div>
+            <div className="grid gap-3">
+              <Label htmlFor="nipBaru">NIP Baru</Label>
+              <Input
+                id="nipBaru"
+                placeholder="19659867 198754 1 001"
+                {...formData.register("nipBaru")}
+              />
+              {formData.formState.errors.nipBaru && (
+                <span className="text-red-600 text-xs font-semibold">
+                  {formData.formState.errors.nipBaru.message}
+                </span>
+              )}
+            </div>
+            <div className="grid gap-3">
+              <Label htmlFor="noArsip">No. Arsip</Label>
+              <Input
+                id="noArsip"
+                placeholder="A 36"
+                {...formData.register("noArsip")}
+              />
+              {formData.formState.errors.noArsip && (
+                <span className="text-red-600 text-xs font-semibold">
+                  {formData.formState.errors.noArsip.message}
+                </span>
+              )}
             </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+            <DialogClose asChild disabled={loading}>
+              <Button variant="outline" disabled={loading} type="button">
+                Cancel
+              </Button>
             </DialogClose>
-            <Button type="submit">Save changes</Button>
+            <Button
+              type="submit"
+              onSubmit={(e) => {
+                e.preventDefault();
+                formData.handleSubmit(handleSubmit)();
+              }}
+              disabled={loading}
+              className="cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <Loader />
+                  <span>Save changes</span>
+                </>
+              ) : (
+                "Save changes"
+              )}
+            </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }
