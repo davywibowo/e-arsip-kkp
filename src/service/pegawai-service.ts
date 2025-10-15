@@ -49,4 +49,19 @@ export default class PegawaiService {
       message: "Successfully created data Pegawai",
     };
   }
+
+  static async getPegawai(): Promise<ResponsePayload> {
+    const dataPegawai = await supabase.from("pegawai").select("*");
+
+    if (dataPegawai.error) {
+      throw new ResponseError(503, "An error while find data Pegawai!");
+    }
+
+    return {
+      status: "success",
+      message: "Successfully get data pegawai",
+      statusCode: 200,
+      data: dataPegawai.data,
+    };
+  }
 }

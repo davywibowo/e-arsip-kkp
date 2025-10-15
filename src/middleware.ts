@@ -29,10 +29,7 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    console.log(url);
     if (url.includes("/pegawai")) {
-      console.log("cihuy");
-
       if (req.method !== "GET" && !token) {
         return NextResponse.json<ResponsePayload>({
           message: "Unathorized! Login first!",
