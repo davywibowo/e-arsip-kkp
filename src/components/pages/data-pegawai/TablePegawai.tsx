@@ -201,7 +201,6 @@ export default function TablePegawai(props: TablePegawaiProps) {
         data={filteredData}
         columns={columns}
       />
-      ;
     </>
   );
 }
