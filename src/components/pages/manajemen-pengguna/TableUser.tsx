@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 
 export const schemaUser = z.object({
-  id: z.string({ error: "Id must be a string" }),
+  id: z.number({ error: "Id is required!" }),
   name: z.string({ error: "Fill name properly!" }),
   username: z.string({ error: "Fill username properly!" }),
   role: z.enum(["USER", "ADMIN"], { error: "Role must be a USER or ADMIN" }),
