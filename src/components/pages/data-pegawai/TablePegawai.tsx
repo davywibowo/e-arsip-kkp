@@ -1,5 +1,4 @@
 "use client";
-import data from "@/util/data.json";
 import { IconDotsVertical, IconSearch } from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
 import z from "zod";
@@ -36,10 +35,12 @@ export const schemaPegawai = z.object({
 
 interface TablePegawaiProps {
   dataResponse: ResponsePayload<z.infer<typeof schemaPegawai>[]>;
+  includeAdd?: boolean;
+  token: string | undefined;
 }
 
 export default function TablePegawai(props: TablePegawaiProps) {
-  const { dataResponse } = props;
+  const { dataResponse, includeAdd, token } = props;
   const [valueSearch, setValueSearch] = useState("");
   const columns: ColumnDef<z.infer<typeof schemaPegawai>>[] = [
     {
@@ -83,30 +84,28 @@ export default function TablePegawai(props: TablePegawaiProps) {
       },
       enableHiding: false,
     },
-
     {
       id: "actions",
-      cell: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Make a copy</DropdownMenuItem>
-            <DropdownMenuItem>Favorite</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: () =>
+        token && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+                size="icon"
+              >
+                <IconDotsVertical />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-32">
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
     },
   ];
 
@@ -155,7 +154,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
             placeholder="Cari Pegawai..."
           />
         </div>
-        <DialogAdd />
+        {includeAdd && <DialogAdd />}
       </div>
       <DataTable<z.infer<typeof schemaPegawai>>
         data={filteredData}

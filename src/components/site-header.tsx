@@ -19,7 +19,7 @@ export function SiteHeader(props: SiteHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   if (pathname.includes("/auth")) return null;
 
   async function handleLogout() {
@@ -67,7 +67,7 @@ export function SiteHeader(props: SiteHeaderProps) {
             : "E-Arsip App"}
         </h1>
         <div className="ml-auto flex items-center gap-2">
-          {token ? (
+          {token && (
             <Button
               disabled={loading}
               onClick={handleLogout}
@@ -81,7 +81,8 @@ export function SiteHeader(props: SiteHeaderProps) {
             >
               <span>Logout</span>
             </Button>
-          ) : (
+          )}
+          {!token && (
             <Button
               variant="ghost"
               asChild
