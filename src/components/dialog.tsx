@@ -21,6 +21,7 @@ import ResponseError from "@/error/ResponseError";
 import toast from "react-hot-toast";
 import { ResponsePayload } from "@/types";
 import Loader from "./Loader";
+import { useTableStore } from "@/store/useTableStore";
 
 export function DialogAdd() {
   const formData = useForm<z.infer<typeof PegawaiValidation.CREATEPEGAWAI>>({
@@ -34,6 +35,7 @@ export function DialogAdd() {
     },
   });
   const [loading, setLoading] = useState(false);
+  const { setIsChange } = useTableStore();
   const [open, setOpen] = useState(false);
 
   async function handleSubmit(
@@ -55,6 +57,7 @@ export function DialogAdd() {
       }
 
       toast.success(dataResponse.message);
+      setIsChange(true)
     } catch (error) {
       if (error instanceof ResponseError) {
         toast.error(error.message);
