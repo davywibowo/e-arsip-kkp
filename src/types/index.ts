@@ -25,10 +25,9 @@ export interface DataUser {
 }
 
 export interface DataPegawai {
-  id: string;
+  id: number;
   namaPegawai: string;
   nipLama: string;
   nipBaru: string;
   noArsip: string;
 }
-

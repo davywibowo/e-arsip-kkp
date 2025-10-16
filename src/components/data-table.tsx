@@ -100,7 +100,7 @@ function DraggableRow<TData extends { id: string | number }>({
   );
 }
 
-export function DataTable<TData extends { id: string }>({
+export function DataTable<TData extends { id: number }>({
   data: initialData,
   columns,
 }: {

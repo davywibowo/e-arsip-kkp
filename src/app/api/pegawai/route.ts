@@ -68,3 +68,35 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     }
   }
 }
+
+export async function PATCH(req: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await req.text();
+    const dataBody = JSON.parse(body) as DataPegawai;
+    const data = Validation.validate(PegawaiValidation.PATCHPEGAWAI, dataBody);
+    const response = await PegawaiService.patchPegawai(data);
+
+    return NextResponse.json<ResponsePayload>(response);
+  } catch (error) {
+    console.log("Error Pegawai Route PATCH Metode:", error);
+    if (error instanceof ResponseError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.message,
+        statusCode: error.status,
+      });
+    } else if (error instanceof ZodError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.issues[0].message,
+        statusCode: 402,
+      });
+    } else {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: "An error occured",
+        statusCode: 500,
+      });
+    }
+  }
+}

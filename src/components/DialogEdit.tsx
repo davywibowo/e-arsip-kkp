@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -9,63 +9,86 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import PegawaiValidation from "@/validation/pegawai-validation";
+} from "./ui/dialog";
+import { DropdownMenuItem } from "./ui/dropdown-menu";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import Loader from "./Loader";
+import { DataPegawai, ResponsePayload } from "@/types";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import PegawaiValidation from "@/validation/pegawai-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import ResponseError from "@/error/ResponseError";
 import toast from "react-hot-toast";
-import { ResponsePayload } from "@/types";
-import Loader from "./Loader";
+import { useRouter } from "next/navigation";
+import { useTableStore } from "@/store/useTableStore";
 
-export function DialogAdd() {
-  const formData = useForm<z.infer<typeof PegawaiValidation.CREATEPEGAWAI>>({
-    resolver: zodResolver(PegawaiValidation.CREATEPEGAWAI),
+export default function DialogEdit({ item }: { item: DataPegawai }) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const form = useForm<z.infer<typeof PegawaiValidation.PATCHPEGAWAI>>({
+    resolver: zodResolver(PegawaiValidation.PATCHPEGAWAI),
     mode: "onChange",
     defaultValues: {
-      namaPegawai: "",
-      nipBaru: "",
-      nipLama: "",
-      noArsip: "",
+      id: item.id as number,
+      namaPegawai: item.namaPegawai,
+      nipBaru: item.nipBaru,
+      nipLama: item.nipLama,
+      noArsip: item.noArsip,
     },
   });
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const { setIsChange } = useTableStore();
 
   async function handleSubmit(
-    values: z.infer<typeof PegawaiValidation.CREATEPEGAWAI>
+    values: z.infer<typeof PegawaiValidation.PATCHPEGAWAI>
   ) {
     setLoading(true);
     try {
       const response = await fetch("/api/pegawai", {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const dataResponse = (await response.json()) as ResponsePayload;
+      const dataResponse =
+        (await response.json()) as ResponsePayload<DataPegawai>;
+
       if (dataResponse.status === "failed") {
         throw new ResponseError(dataResponse.statusCode, dataResponse.message);
       }
 
       toast.success(dataResponse.message);
+
+      form.reset({
+        id: dataResponse.data?.id as number,
+        namaPegawai: dataResponse.data?.namaPegawai,
+        nipBaru: dataResponse.data?.nipBaru,
+        nipLama: dataResponse.data?.nipLama,
+        noArsip: dataResponse.data?.noArsip,
+      });
+
+      setOpen(false);
+      setIsChange(true);
     } catch (error) {
       if (error instanceof ResponseError) {
         toast.error(error.message);
+        if (error.status === 403) {
+          router.push("/auth/login");
+        }
       } else {
         toast.error("An error occured! Please try again later");
       }
     } finally {
       setLoading(false);
-      setOpen(false);
     }
   }
+
+  console.log(item.id);
 
   return (
     <Dialog
@@ -74,19 +97,21 @@ export function DialogAdd() {
         if (!loading) setOpen(nextOpen);
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant="outline">Add</Button>
+      <DialogTrigger>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Edit
+        </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            formData.handleSubmit(handleSubmit)();
+            form.handleSubmit(handleSubmit)();
           }}
           className="space-y-5"
         >
           <DialogHeader>
-            <DialogTitle>Add Employee</DialogTitle>
+            <DialogTitle>Edit Employee</DialogTitle>
             <DialogDescription>
               Make changes to your profile here. Click save when you&apos;re
               done.
@@ -98,12 +123,12 @@ export function DialogAdd() {
               <Input
                 id="namaPegawai"
                 placeholder="Cristiano Ronaldo"
-                {...formData.register("namaPegawai")}
+                {...form.register("namaPegawai")}
               />
 
-              {formData.formState.errors.namaPegawai && (
+              {form.formState.errors.namaPegawai && (
                 <span className="text-red-600 text-xs font-semibold">
-                  {formData.formState.errors.namaPegawai.message}
+                  {form.formState.errors.namaPegawai.message}
                 </span>
               )}
             </div>
@@ -112,11 +137,11 @@ export function DialogAdd() {
               <Input
                 id="nipLama"
                 placeholder="13386652"
-                {...formData.register("nipLama")}
+                {...form.register("nipLama")}
               />
-              {formData.formState.errors.nipLama && (
+              {form.formState.errors.nipLama && (
                 <span className="text-red-600 text-xs font-semibold">
-                  {formData.formState.errors.nipLama.message}
+                  {form.formState.errors.nipLama.message}
                 </span>
               )}
             </div>
@@ -124,25 +149,26 @@ export function DialogAdd() {
               <Label htmlFor="nipBaru">NIP Baru</Label>
               <Input
                 id="nipBaru"
+                {...form.register("nipBaru")}
                 placeholder="19659867 198754 1 001"
-                {...formData.register("nipBaru")}
               />
-              {formData.formState.errors.nipBaru && (
+
+              {form.formState.errors.nipBaru && (
                 <span className="text-red-600 text-xs font-semibold">
-                  {formData.formState.errors.nipBaru.message}
+                  {form.formState.errors.nipBaru.message}
                 </span>
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="noArsip">No. Arsip</Label>
+              <Label htmlFor="noArsip">No Arsip</Label>
               <Input
+                {...form.register("noArsip")}
                 id="noArsip"
                 placeholder="A 36"
-                {...formData.register("noArsip")}
               />
-              {formData.formState.errors.noArsip && (
+              {form.formState.errors.noArsip && (
                 <span className="text-red-600 text-xs font-semibold">
-                  {formData.formState.errors.noArsip.message}
+                  {form.formState.errors.noArsip.message}
                 </span>
               )}
             </div>
@@ -153,15 +179,7 @@ export function DialogAdd() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button
-              type="submit"
-              onSubmit={(e) => {
-                e.preventDefault();
-                formData.handleSubmit(handleSubmit)();
-              }}
-              disabled={loading}
-              className="cursor-pointer"
-            >
+            <Button type="submit" disabled={loading} className="cursor-pointer">
               {loading ? (
                 <>
                   <Loader />

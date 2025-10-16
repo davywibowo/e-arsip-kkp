@@ -14,11 +14,15 @@ import { DataTable } from "@/components/data-table";
 import { DragHandle } from "@/components/Draghandler";
 import { Input } from "@/components/ui/input";
 import { DialogAdd } from "@/components/dialog";
-import { useMemo, useState } from "react";
-import { ResponsePayload } from "@/types";
+import { useEffect, useMemo, useState } from "react";
+import { DataPegawai, ResponsePayload } from "@/types";
+import DialogEdit from "@/components/DialogEdit";
+import { useTableStore } from "@/store/useTableStore";
+import ResponseError from "@/error/ResponseError";
+import toast from "react-hot-toast";
 
 export const schemaPegawai = z.object({
-  id: z.string({ error: "Id is required!" }),
+  id: z.number({ error: "Id is required!" }),
   namaPegawai: z
     .string({ error: "Nama Pegawai is required!" })
     .length(1, { error: "Minimum length of Nama pegawai is 1" }),
@@ -42,6 +46,41 @@ interface TablePegawaiProps {
 export default function TablePegawai(props: TablePegawaiProps) {
   const { dataResponse, includeAdd, token } = props;
   const [valueSearch, setValueSearch] = useState("");
+  const { isChange } = useTableStore();
+  const [dataPegawai, setData] = useState<DataPegawai[]>(
+    dataResponse.data || []
+  );
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const response = await fetch("/api/pegawai", { method: "GET" });
+        const dataResponse = (await response.json()) as ResponsePayload<
+          DataPegawai[]
+        >;
+        if (dataResponse.status === "failed") {
+          throw new ResponseError(
+            dataResponse.statusCode,
+            dataResponse.message
+          );
+        }
+
+        setData(dataResponse.data || []);
+      } catch (error) {
+        if (error instanceof ResponseError) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.error("An error occured!");
+      }
+    };
+
+    if (isChange) {
+      getData();
+    }
+  }, [isChange]);
+
   const columns: ColumnDef<z.infer<typeof schemaPegawai>>[] = [
     {
       id: "drag",
@@ -86,7 +125,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
     },
     {
       id: "actions",
-      cell: () =>
+      cell: ({ row }) =>
         token && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -100,9 +139,14 @@ export default function TablePegawai(props: TablePegawaiProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DialogEdit item={row.original} />
               <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                variant="destructive"
+              >
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
@@ -110,7 +154,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
   ];
 
   const filteredData = useMemo(() => {
-    const data: z.infer<typeof schemaPegawai>[] = dataResponse.data || [];
+    const data: z.infer<typeof schemaPegawai>[] = dataPegawai || [];
     const filteredByNamaPegawai = data.filter((d) =>
       d.namaPegawai.toLowerCase().includes(valueSearch.toLowerCase())
     );
@@ -140,7 +184,8 @@ export default function TablePegawai(props: TablePegawaiProps) {
     }
 
     return filteredByNamaPegawai;
-  }, [valueSearch, dataResponse.data]);
+  }, [valueSearch, dataPegawai]);
+
   return (
     <>
       <div className="w-full flex justify-between px-6">
