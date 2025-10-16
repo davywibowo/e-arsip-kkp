@@ -100,3 +100,37 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     }
   }
 }
+
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+  try {
+    const idPegawai = req.nextUrl.searchParams.get("id");
+    if (!idPegawai) {
+      throw new ResponseError(402, "Id is required!");
+    }
+
+    const response = await PegawaiService.deletePegawai(idPegawai);
+
+    return NextResponse.json<ResponsePayload>(response);
+  } catch (error) {
+    console.log("Error Pegawai Route DELETE Metode:", error);
+    if (error instanceof ResponseError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.message,
+        statusCode: error.status,
+      });
+    } else if (error instanceof ZodError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.issues[0].message,
+        statusCode: 402,
+      });
+    } else {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: "An error occured",
+        statusCode: 500,
+      });
+    }
+  }
+}

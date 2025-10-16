@@ -88,8 +88,6 @@ export default function DialogEdit({ item }: { item: DataPegawai }) {
     }
   }
 
-  console.log(item.id);
-
   return (
     <Dialog
       open={open}
@@ -97,7 +95,7 @@ export default function DialogEdit({ item }: { item: DataPegawai }) {
         if (!loading) setOpen(nextOpen);
       }}
     >
-      <DialogTrigger>
+      <DialogTrigger className="w-full">
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           Edit
         </DropdownMenuItem>

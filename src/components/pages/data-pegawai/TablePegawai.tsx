@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -20,6 +19,7 @@ import DialogEdit from "@/components/DialogEdit";
 import { useTableStore } from "@/store/useTableStore";
 import ResponseError from "@/error/ResponseError";
 import toast from "react-hot-toast";
+import DialogDelete from "@/components/DialogDelete";
 
 export const schemaPegawai = z.object({
   id: z.number({ error: "Id is required!" }),
@@ -46,7 +46,7 @@ interface TablePegawaiProps {
 export default function TablePegawai(props: TablePegawaiProps) {
   const { dataResponse, includeAdd, token } = props;
   const [valueSearch, setValueSearch] = useState("");
-  const { isChange } = useTableStore();
+  const { isChange, setIsChange } = useTableStore();
   const [dataPegawai, setData] = useState<DataPegawai[]>(
     dataResponse.data || []
   );
@@ -78,8 +78,9 @@ export default function TablePegawai(props: TablePegawaiProps) {
 
     if (isChange) {
       getData();
+      setIsChange(false);
     }
-  }, [isChange]);
+  }, [isChange, setIsChange]);
 
   const columns: ColumnDef<z.infer<typeof schemaPegawai>>[] = [
     {
@@ -141,12 +142,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
             <DropdownMenuContent align="end" className="w-32">
               <DialogEdit item={row.original} />
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                variant="destructive"
-              >
-                Delete
-              </DropdownMenuItem>
+              <DialogDelete item={row.original} />
             </DropdownMenuContent>
           </DropdownMenu>
         ),

@@ -94,7 +94,7 @@ export default class PegawaiService {
       .eq("nipLama", data.nipLama);
 
     if (dataPegawaiNipLama.error) {
-      throw new ResponseError(503, "An error while create data Pegawai!");
+      throw new ResponseError(503, "An error while edit data Pegawai!");
     }
 
     if (dataPegawaiNipLama.data?.length >= 2) {
@@ -107,7 +107,7 @@ export default class PegawaiService {
       .eq("nipBaru", data.nipBaru);
 
     if (dataPegawaiNipBaru.error) {
-      throw new ResponseError(503, "An error while create data Pegawai!");
+      throw new ResponseError(503, "An error while edit data Pegawai!");
     }
 
     if (dataPegawaiNipBaru.data.length >= 2) {
@@ -120,7 +120,7 @@ export default class PegawaiService {
       .eq("noArsip", data.noArsip);
 
     if (dataPegawaiNoArsip.error) {
-      throw new ResponseError(503, "An error while create data Pegawai!");
+      throw new ResponseError(503, "An error while edit Pegawai!");
     }
 
     if (dataPegawaiNoArsip.data.length >= 2) {
@@ -142,6 +142,29 @@ export default class PegawaiService {
       message: "Successfully edit data pegawai",
       statusCode: 201,
       data: dataEdited.data[0],
+    };
+  }
+
+  static async deletePegawai(id: string): Promise<ResponsePayload> {
+    const dataPegawai = await supabase.from("pegawai").select("*").eq("id", id);
+    if (dataPegawai.error) {
+      throw new ResponseError(503, "An error while Detele data Pegawai!");
+    }
+
+    if (dataPegawai.data.length === 0) {
+      throw new ResponseError(404, "Pegawai is not found!");
+    }
+
+    const deletedPegawai = await supabase.from("pegawai").delete().eq("id", id);
+
+    if (deletedPegawai.error) {
+      throw new ResponseError(503, "An error while delete data pegawai!");
+    }
+
+    return {
+      status: "success",
+      message: "Successfully delete data pegawai",
+      statusCode: 201,
     };
   }
 }
