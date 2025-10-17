@@ -135,7 +135,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
                 className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
                 size="icon"
               >
-                <IconDotsVertical />
+              <IconDotsVertical />
                 <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>

@@ -43,6 +43,10 @@ export function DialogAdd() {
   ) {
     setLoading(true);
     try {
+      if (values.nipBaru === "-" && values.nipLama === "-") {
+        throw new ResponseError(405, "Only one nip can add '-'");
+      }
+      
       const response = await fetch("/api/pegawai", {
         method: "POST",
         body: JSON.stringify(values),
@@ -57,7 +61,7 @@ export function DialogAdd() {
       }
 
       toast.success(dataResponse.message);
-      setIsChange(true)
+      setIsChange(true);
     } catch (error) {
       if (error instanceof ResponseError) {
         toast.error(error.message);

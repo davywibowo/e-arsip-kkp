@@ -47,6 +47,10 @@ export default function DialogEdit({ item }: { item: DataPegawai }) {
   ) {
     setLoading(true);
     try {
+      if (values.nipBaru === "-" && values.nipLama === "-") {
+        throw new ResponseError(405, "Only one nip can add '-'");
+      }
+      
       const response = await fetch("/api/pegawai", {
         method: "PATCH",
         body: JSON.stringify(values),
