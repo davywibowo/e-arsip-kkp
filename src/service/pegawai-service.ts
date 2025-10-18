@@ -6,30 +6,34 @@ export default class PegawaiService {
   static async createPegawai(
     data: Omit<DataPegawai, "id">
   ): Promise<ResponsePayload> {
-    const dataPegawaiNipLama = await supabase
-      .from("pegawai")
-      .select("*")
-      .eq("nipLama", data.nipLama);
+    if (data.nipLama !== "-") {
+      const dataPegawaiNipLama = await supabase
+        .from("pegawai")
+        .select("*")
+        .eq("nipLama", data.nipLama);
 
-    if (dataPegawaiNipLama.error) {
-      throw new ResponseError(503, "An error while create data Pegawai!");
+      if (dataPegawaiNipLama.error) {
+        throw new ResponseError(503, "An error while create data Pegawai!");
+      }
+
+      if (dataPegawaiNipLama.data?.length > 0) {
+        throw new ResponseError(401, "Oops! NIP Lama has been registered!");
+      }
     }
 
-    if (dataPegawaiNipLama.data?.length > 0) {
-      throw new ResponseError(401, "Oops! NIP Lama has been registered!");
-    }
+    if (data.nipBaru !== "-") {
+      const dataPegawaiNipBaru = await supabase
+        .from("pegawai")
+        .select("*")
+        .eq("nipBaru", data.nipBaru);
 
-    const dataPegawaiNipBaru = await supabase
-      .from("pegawai")
-      .select("*")
-      .eq("nipBaru", data.nipBaru);
+      if (dataPegawaiNipBaru.error) {
+        throw new ResponseError(503, "An error while create data Pegawai!");
+      }
 
-    if (dataPegawaiNipBaru.error) {
-      throw new ResponseError(503, "An error while create data Pegawai!");
-    }
-
-    if (dataPegawaiNipBaru.data.length > 0) {
-      throw new ResponseError(401, "Oops! NIP Baru has been registered!");
+      if (dataPegawaiNipBaru.data.length > 0) {
+        throw new ResponseError(401, "Oops! NIP Baru has been registered!");
+      }
     }
 
     const dataPegawaiNoArsip = await supabase

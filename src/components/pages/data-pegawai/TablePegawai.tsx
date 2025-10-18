@@ -135,7 +135,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
                 className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
                 size="icon"
               >
-              <IconDotsVertical />
+                <IconDotsVertical />
                 <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -151,6 +151,7 @@ export default function TablePegawai(props: TablePegawaiProps) {
 
   const filteredData = useMemo(() => {
     const data: z.infer<typeof schemaPegawai>[] = dataPegawai || [];
+    console.log(data);
     const filteredByNamaPegawai = data.filter((d) =>
       d.namaPegawai.toLowerCase().includes(valueSearch.toLowerCase())
     );
