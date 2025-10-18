@@ -73,6 +73,7 @@ export default function LoginPage() {
 
       toast.success(data.message);
       router.push("/");
+      router.refresh();
     } catch (err) {
       if (err instanceof ResponseError) {
         setError(err.message);

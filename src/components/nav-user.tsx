@@ -1,17 +1,9 @@
 "use client";
-
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-react";
+import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -23,15 +15,55 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DataUser } from "@/types";
+import { DataUser, ResponsePayload } from "@/types";
+import { useState } from "react";
+import ResponseError from "@/error/ResponseError";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export function NavUser({ user }: { user: DataUser }) {
   const { isMobile } = useSidebar();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleLogout() {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/auth", {
+        method: "DELETE",
+      });
+
+      const dataResponse = (await response.json()) as ResponsePayload;
+      if (dataResponse.status === "failed") {
+        throw new ResponseError(dataResponse.statusCode, dataResponse.message);
+      }
+
+      toast.success(dataResponse.message);
+
+      router.push("/");
+      router.refresh();
+      setOpen(false);
+    } catch (error) {
+      if (error instanceof ResponseError) {
+        toast.error(error.message);
+        return;
+      }
+      toast.error("An error occurred, please try again later");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu
+          open={open}
+          onOpenChange={(nextOpen) => {
+            if (!loading) setOpen(nextOpen);
+          }}
+        >
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -63,22 +95,14 @@ export function NavUser({ user }: { user: DataUser }) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+              disabled={loading}
+              className="cursor-pointer hover:bg-slate-200/80 duration-100"
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>
