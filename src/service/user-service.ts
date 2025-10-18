@@ -48,6 +48,7 @@ export default class UserService {
       value: token,
       httpOnly: true,
       maxAge: 60 * 60,
+      secure: process.env.NODE_ENV === "production",
     });
 
     return {
@@ -93,6 +94,7 @@ export default class UserService {
       value: token,
       httpOnly: true,
       maxAge: 60 * 60,
+      secure: process.env.NODE_ENV === "production",
     });
 
     return {
