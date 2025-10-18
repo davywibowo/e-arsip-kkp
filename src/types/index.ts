@@ -31,3 +31,9 @@ export interface DataPegawai {
   nipBaru: string;
   noArsip: string;
 }
+
+export interface DataStatistic {
+  totalEmployee: number;
+  totalNipLama: number;
+  totalNipBaru: number;
+}
