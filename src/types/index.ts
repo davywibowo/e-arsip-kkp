@@ -18,10 +18,11 @@ export interface DataLogin {
 }
 
 export interface DataUser {
-  id: string;
+  id: number;
   name: string;
   username: string;
   role: "USER" | "ADMIN";
+  isYou: boolean;
 }
 
 export interface DataPegawai {

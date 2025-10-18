@@ -1,34 +1,31 @@
 "use client";
-import { IconDotsVertical, IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import { ColumnDef } from "@tanstack/react-table";
 import z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/data-table";
 import { DragHandle } from "@/components/Draghandler";
 import { ResponsePayload } from "@/types";
-import RoleCell from "@/components/RoleCell";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import DeleteCell from "../data-pegawai/DeleteCell";
 
 export const schemaUser = z.object({
   id: z.number({ error: "Id is required!" }),
   name: z.string({ error: "Fill name properly!" }),
   username: z.string({ error: "Fill username properly!" }),
   role: z.enum(["USER", "ADMIN"], { error: "Role must be a USER or ADMIN" }),
+  isYou: z.boolean({ error: "" }),
 });
 
 interface TableUserProps {
   response: ResponsePayload<z.infer<typeof schemaUser>[]>;
+  token: string | undefined;
 }
+
 export default function TableUser(props: TableUserProps) {
-  const { response } = props;
+  const { response, token } = props;
   const [valueSearch, setValueSearch] = useState("");
 
   const columns: ColumnDef<z.infer<typeof schemaUser>>[] = [
@@ -45,7 +42,11 @@ export default function TableUser(props: TableUserProps) {
       accessorKey: "username",
       header: "Username",
       cell: ({ row }) => {
-        return <span>{row.original.username}</span>;
+        return (
+          <span>
+            {row.original.username} {row.original.isYou && "(you)"}
+          </span>
+        );
       },
       enableHiding: false,
     },
@@ -61,31 +62,20 @@ export default function TableUser(props: TableUserProps) {
       accessorKey: "role",
       header: "ROLE",
       cell: ({ row }) => {
-        return <RoleCell roleUser={row.original.role} />;
+        return (
+          <Badge
+            variant={"default"}
+            className={cn(row.original.role === "ADMIN" ? "bg-blue-500" : "")}
+          >
+            {row.original.role}
+          </Badge>
+        );
       },
       enableHiding: false,
     },
     {
       id: "actions",
-      cell: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: ({ row }) => <DeleteCell token={token} item={row.original} />,
     },
   ];
 

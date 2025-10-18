@@ -38,6 +38,16 @@ export async function middleware(req: NextRequest) {
         });
       }
     }
+
+    if (url.includes("/user")) {
+      if (req.method !== "GET" && !token) {
+        return NextResponse.json<ResponsePayload>({
+          status: "failed",
+          message: "Oops! You don't have any access for this!",
+          statusCode: 403,
+        });
+      }
+    }
   } else {
     if (url.includes("/auth")) {
       if (token) {

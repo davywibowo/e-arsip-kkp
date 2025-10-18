@@ -35,6 +35,46 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     } else {
       return NextResponse.json<ResponsePayload>({
         status: "failed",
+      message: "An error occured",
+        statusCode: 500,
+      });
+    }
+  }
+}
+
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+    if (!token) {
+      throw new ResponseError(403, "Oops! Token is required");
+    }
+
+    const id = req.nextUrl.searchParams.get("id") as number | null;
+    if (!id) {
+      throw new ResponseError(404, "Id is not found!");
+    }
+
+    const response = await UserService.deleteUser(token, id);
+
+    return NextResponse.json<ResponsePayload>(response);
+  } catch (error) {
+    console.log("Error User Route DELETE Metode:", error);
+    if (error instanceof ResponseError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.message,
+        statusCode: error.status,
+      });
+    } else if (error instanceof ZodError) {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
+        message: error.issues[0].message,
+        statusCode: 402,
+      });
+    } else {
+      return NextResponse.json<ResponsePayload>({
+        status: "failed",
         message: "An error occured",
         statusCode: 500,
       });

@@ -138,6 +138,7 @@ export default class UserService {
         username: d.username,
         name: d.name,
         role: d.role,
+        isYou: d.username === dataUser.username,
       }));
 
       return {
@@ -171,13 +172,14 @@ export default class UserService {
         username: d.username,
         name: d.name,
         role: d.role,
+        isYou: d.username === dataUser.username,
       }));
 
       return {
         status: "success",
         statusCode: 200,
         message: "Successfully get data user",
-        data: data as DataUser[]
+        data: data as DataUser[],
       };
     }
 
@@ -198,6 +200,57 @@ export default class UserService {
         name: dataFromDb.data[0].name,
         role: dataFromDb.data[0].role,
       },
+    };
+  }
+
+  static async deleteUser(token: string, id: number): Promise<ResponsePayload> {
+    const verifiedToken = JWT.verifyToken(token);
+    if (!verifiedToken) {
+      throw new ResponseError(403, "Oops! Token is required!");
+    }
+
+    const dataUser = await supabase
+      .from("user")
+      .select("*")
+      .eq("username", verifiedToken.username);
+
+    if (dataUser.error) {
+      console.log(dataUser.error);
+      throw new ResponseError(500, "An error occured! Please try again later");
+    }
+
+    const dataAcces = dataUser.data[0] as DataUser;
+
+    if (dataAcces.role !== "ADMIN") {
+      throw new ResponseError(
+        403,
+        "Oops! You don't have any access for this action!"
+      );
+    }
+
+    const userDelete = await supabase.from("user").select("*").eq("id", id);
+
+    if (userDelete.error) {
+      throw new ResponseError(500, "An error occured! Please try again later");
+    }
+
+    if (userDelete.data.length === 0) {
+      throw new ResponseError(404, "OOps! user is not found!");
+    }
+
+    if (userDelete.data[0].username === verifiedToken.username) {
+      throw new ResponseError(401, "Oops! You can't delete yourself :D");
+    }
+
+    const deletedUser = await supabase.from("user").delete().eq("id", id);
+    if (deletedUser.error) {
+      throw new ResponseError(500, "An error occured! Please try again later");
+    }
+
+    return {
+      status: "success",
+      message: "Successfully deleted one user!",
+      statusCode: 201,
     };
   }
 }

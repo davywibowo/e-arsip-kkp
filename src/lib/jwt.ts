@@ -12,6 +12,7 @@ export default class JWT {
       algorithm: "HS256",
     });
   }
+  
   static verifyToken(token: string | null): JwtDecoded | null {
     try {
       if (!token) {
