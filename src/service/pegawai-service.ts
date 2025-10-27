@@ -127,7 +127,7 @@ export default class PegawaiService {
       throw new ResponseError(503, "An error while edit Pegawai!");
     }
 
-    if (dataPegawaiNoArsip.data.length >= 2) {
+    if (dataPegawaiNoArsip.data.length > 1) {
       throw new ResponseError(401, "Oops! No Arsip has been registered!");
     }
 
